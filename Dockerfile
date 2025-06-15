@@ -1,15 +1,19 @@
-# Python 3.11 slim + pytest, ここだけで完結
 FROM python:3.11-slim
 
-# システムツール（任意） & Poetry などを使わない最小構成
+# システム依存のビルドパッケージ（pytest-mock が依存することあり）
 RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
-# 依存ライブラリを一括インストール
-RUN pip install --no-cache-dir \
-      pytest \
-      pytest-cov \
-      pytest-mock
-
-# 作業ディレクトリ
+# 作業ディレクトリを指定
 WORKDIR /code
-COPY . /code
+
+# 依存ライブラリを先にコピー
+COPY requirements.txt .
+
+# Python ライブラリをインストール
+RUN pip install --no-cache-dir -r requirements.txt
+
+# アプリケーションコードをすべてコピー
+COPY . .
+
+# app モジュールを見つけやすくするために PYTHONPATH を明示
+ENV PYTHONPATH=/code

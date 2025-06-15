@@ -3,6 +3,7 @@ services:
   app:
     build: .
     volumes:
-      - .:/code        # ホストの変更を即時反映
+      - .:/code                # ローカルコードをコンテナにマウント
+    working_dir: /code         # 作業ディレクトリを /code に設定
     command: >
       sh -c "PYTHONPATH=. pytest -q --cov=app --cov-report=term-missing"
